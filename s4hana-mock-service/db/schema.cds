@@ -6,7 +6,6 @@ entity Products {
   description        : String;
   price              : Decimal;
   category           : String;
-  availability       : Boolean;
 }
 
 entity Inventory {
@@ -18,7 +17,7 @@ entity Inventory {
 
 entity Orders {
   key ID             : Integer;
-  customerName       : String;
+  customerID       : Integer;
   orderDate          : Date;
   totalAmount        : Decimal;
   status             : String;
@@ -30,7 +29,6 @@ entity OrderItems {
   orderId            : String;
   productID      : String;
   quantity           : Integer;
-  price              : Decimal;
 }
 
 entity FinancialData {
