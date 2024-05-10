@@ -1,7 +1,7 @@
 using { mock.test.s4hana as s4hana } from '../db/schema';
 
 service ProductService {
-  entity Products as projection on s4hana.Products;
+  entity Products @readonly as projection on s4hana.Products;
 }
 
 service InventoryService {
@@ -13,7 +13,7 @@ service OrderService {
 }
 
 service FinancialDataService {
-  entity FinancialData as projection on s4hana.FinancialData;
+  entity FinancialData @readonly as projection on s4hana.FinancialData;
 }
 
 service CustomerService {
