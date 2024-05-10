@@ -10,7 +10,7 @@ entity Products {
 
 entity Inventory {
   key ID             : Integer;
-  productID      : String;
+  productID      : Integer;
   location           : String;
   quantity           : Integer;
 }
@@ -26,8 +26,8 @@ entity Orders {
 
 entity OrderItems {
   key ID             : Integer;
-  orderId            : String;
-  productID      : String;
+  orderId            : Integer;
+  productID      : Integer;
   quantity           : Integer;
 }
 
