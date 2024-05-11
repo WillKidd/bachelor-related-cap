@@ -1,35 +1,36 @@
-const cds = require('@sap/cds');
+const cds = require('@sap/cds')
+module.exports = function (){
+  this.on('submitOrder', async (req)=>{
+    const {customerID, items} = req.data;
+    
+    const tx = cds.transaction(req);
 
-module.exports = cds.service.impl(async function() {
-  const { Products, Inventory, Orders, OrderItems, FinancialData, Customers } = this.entities;
+    const customerEntity = await tx.run(SELECT.from('mock.test.s4hana.Customers').where({ID: customerID}));
 
-
-// Custom request method to create an order with order items
-this.on('POST', 'Orders', async req => {
-    const { customerID, orderDate, totalAmount, status, items } = req.data;
-    const order = await INSERT.into(Orders).entries({ customerID, orderDate, totalAmount, status });
-  
-    if (items && Array.isArray(items)) {
-    console.log(Array.isArray(items))
-      const orderItems = items.map(item => ({ ...item, orderId: order.ID }));
-      await INSERT.into(OrderItems).entries(orderItems);
+    if (!customerEntity){
+      throw new Error('Customer not found!');
     }
-  
-    return order;
-  });
 
-  // Custom request method to get financial data for a specific period
-  this.on('GET', 'FinancialData', async req => {
-    const period = req.data.period;
-    return await SELECT.from(FinancialData).where({ period });
-  });
+    let totalAmount = 0;
+    for (const item of items){
+      const productEntity = await tx.run(SELECT.from('mock.test.s4hana.Products').where({ID: item.productID}))
 
-  // Business logic to update inventory when an order is placed
-  this.after('CREATE', 'Orders', async (data, req) => {
-    const { items } = data;
-    for (const item of items) {
-      const { productID, quantity } = item;
-      await UPDATE(Inventory).where({ productID }).set({ quantity: { '-=': quantity } });
+      if (!productEntity){
+        throw new Error('Product not found!');
+      }
+      totalAmount+= productEntity.price * item.quantity;
     }
-  });
-});
+
+    const newOrder = {
+      customerID: customerID,
+      orderDate: new Date(),
+      totalAmount: totalAmount,
+      status: 'Pending',
+      items:items
+    };
+
+    const createOrder = await tx.run(INSERT.into('mock.test.s4hana.Orders').entries(newOrder));
+    await tx.commit();
+    return createOrder;
+  })
+}
