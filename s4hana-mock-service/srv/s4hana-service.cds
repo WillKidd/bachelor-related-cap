@@ -8,4 +8,5 @@ service MockService {
   entity FinancialData as projection on db.FinancialData;
   entity Customers as projection on db.Customers;
   action submitOrder (customerID: UUID, items: array of OrderItems);
+  action cancelOrder(orderID: UUID);
 }
