@@ -13,7 +13,7 @@
             ],
             "runtimeExecutable": "cds",
             "args": ["watch"],
-            "cwd": "/Users/jan.zimmermann/Documents/cap/s4hana-mock-service"
+            "cwd": "${workspaceFolder}/s4hana-mock-service"
         }
     ]
 }

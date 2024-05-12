@@ -1,3 +1,1 @@
-ID,customerID,orderDate,totalAmount,status
-87fd1959-f4dc-4b20-8eea-1564dc65ac30,87fd1959-f4dc-4b20-8eea-1564dc65ac22,2023-05-01,100.00,In Progress
-87fd1959-f4dc-4b20-8eea-1564dc65ac31,87fd1959-f4dc-4b20-8eea-1564dc65ac23,2023-05-02,200.00,Completed
+ID,customerID,orderDate,totalAmount,status,items
