@@ -37,7 +37,7 @@ module.exports = function (){
       items: items
     };
 
-    const createOrder = await cds.run(INSERT.into('mock.test.s4hana.Orders').entries(Order));
+    await cds.run(INSERT.into('mock.test.s4hana.Orders').entries(Order));
     }
   ); // submitOrder
 
@@ -51,4 +51,5 @@ module.exports = function (){
       await cds.run(DELETE.from('mock.test.s4hana.Orders').where({ID: orderID}));
     }
   }); // cancelOrder
+
 }
