@@ -14,13 +14,13 @@ module.exports = function (){
     
     let totalAmount = 0;
     for (const item of items){
-      const product = await cds.run(SELECT.one.from('mock.test.s4hana.Products').where({ID: item.productID}));
+      const product = await cds.run(SELECT.one.from('mock.test.s4hana.Products').where({ID: item.product_ID}));
       totalAmount+= product.price * item.quantity;
     }
 
 
     const Order = {
-      customerID: customerID,
+      customer_ID: customerID,
       orderDate: new Date().toISOString(),
       totalAmount: totalAmount,
       status: 'Pending',

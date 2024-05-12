@@ -1,1 +1,1 @@
-ID,customerID,orderDate,totalAmount,status,items
+ID,customer_ID,orderDate,totalAmount,status,items

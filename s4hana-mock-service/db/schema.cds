@@ -9,22 +9,22 @@ entity Products: cuid {
 }
 
 entity Inventory: cuid {
-  productID      : UUID;
+  product      : Association to Products;
   location           : String;
   quantity           : Integer;
 }
 
 entity Orders: cuid {
-  customerID       : UUID;
+  customer       : Association to Customers;
   orderDate          : Date;
   totalAmount        : Decimal;
   status             : String;
-  items              : Composition of many OrderItems on items.orderId = ID;
+  items              : Composition of many OrderItems on items.order = $self;
 }
 
 entity OrderItems: cuid {
-  orderId            : UUID;
-  productID      : UUID;
+  order            : Association to Orders;
+  product      : Association to Products;
   quantity           : Integer;
 }
 

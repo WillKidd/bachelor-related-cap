@@ -1,3 +1,3 @@
-ID,productID,location,quantity
-87fd1959-f4dc-4b20-8eea-1564dc65ac26,1,Warehouse A,100
-87fd1959-f4dc-4b20-8eea-1564dc65ac27,2,Warehouse B,50
+ID,product_ID,location,quantity
+87fd1959-f4dc-4b20-8eea-1564dc65ac26,87fd1959-f4dc-4b20-8eea-1564dc65ac32,Warehouse A,100
+87fd1959-f4dc-4b20-8eea-1564dc65ac27,87fd1959-f4dc-4b20-8eea-1564dc65ac33,Warehouse B,50
