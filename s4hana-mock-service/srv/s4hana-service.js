@@ -59,15 +59,17 @@ module.exports = function () {
 
   this.on("cancelOrder", async (req) => {
     const { orderID } = req.data;
-    const order = await cds.run(
-      SELECT.one.from("mock.test.s4hana.Orders").where({ ID: orderID })
-    );
-    if (order.status !== "Pending") {
-      throw new Error("Order can't be canceled!");
-    } else {
-      await cds.run(
-        DELETE.from("mock.test.s4hana.Orders").where({ ID: orderID })
+    await cds.tx(async (tx) => {
+      const order = await tx.run(
+        SELECT.one.from("mock.test.s4hana.Orders").where({ ID: orderID })
       );
-    }
+      if (order.status !== "Pending") {
+        throw new Error("Order can't be canceled!");
+      } else {
+        await tx.run(
+          DELETE.from("mock.test.s4hana.Orders").where({ ID: orderID })
+        );
+      }
+    });
   }); // cancelOrder
 };
