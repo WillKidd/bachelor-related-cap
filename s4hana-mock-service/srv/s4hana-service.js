@@ -1,14 +1,49 @@
 const cds = require("@sap/cds");
+
+async function checkInventory(productID, requiredQuantity, tx) {
+  const inventory = await tx.run(
+    SELECT.one.from("mock.test.s4hana.Inventory").where({ product_ID: productID })
+  );
+
+  if (!inventory || inventory.quantity < requiredQuantity) {
+    throw new Error("Item quantity exceeds inventory!");
+  }
+  const newQuantity = inventory.quantity - requiredQuantity;
+  return newQuantity;
+}
+
+async function updateInventory(productID, newQuantity, tx){
+  await tx.run(
+    UPDATE.entity("mock.test.s4hana.Inventory").where({ product_ID: productID }).with({quantity: newQuantity})
+  );
+}
+
+async function getProduct(productID, tx){
+  return await tx.run(
+    SELECT.one
+      .from("mock.test.s4hana.Products")
+      .where({ ID: productID})
+  );
+}
+
+async function getCustomer(customerID, tx){
+  return await tx.run(
+    SELECT.one
+      .from("mock.test.s4hana.Customers")
+      .where({ ID: customerID })
+  );
+}
+
+async function addOrder(order, tx){
+  await tx.run(INSERT.into("mock.test.s4hana.Orders").entries(order));
+}
+
 module.exports = function () {
   this.on("submitOrder", async (req) => {
     const { customerID, items } = req.data;
     try {
       await cds.tx(async (tx) => {
-        const customer = await tx.run(
-          SELECT.one
-            .from("mock.test.s4hana.Customers")
-            .where({ ID: customerID })
-        );
+        const customer = await getCustomer(customerID, tx);
 
         if (!customer) {
           throw new Error("Customer not found!");
@@ -16,29 +51,10 @@ module.exports = function () {
 
         let totalAmount = 0;
         for (const item of items) {
-          const product = await tx.run(
-            SELECT.one
-              .from("mock.test.s4hana.Products")
-              .where({ ID: item.product_ID })
-          );
-          const inventory = await tx.run(
-            SELECT.one
-              .from("mock.test.s4hana.Inventory")
-              .where({ product_ID: product.ID })
-          );
-
-          if (item.quantity > inventory.quantity) {
-            throw new Error("Item quantity exceed inventory!");
-          } else {
-            const newQuantity = inventory.quantity - item.quantity;
-            console.log(newQuantity);
-            await tx.run(
-              UPDATE.entity("mock.test.s4hana.Inventory")
-                .where({ ID: inventory.ID })
-                .with({ quantity: newQuantity })
-            );
-          }
-
+          const product = await getProduct(item.product_ID, tx);
+          const newQuantity = await checkInventory(product.ID, item.quantity, tx);
+          console.log(newQuantity);
+          await updateInventory(product.ID, newQuantity, tx);
           totalAmount += product.price * item.quantity;
         }
 
@@ -50,7 +66,7 @@ module.exports = function () {
           items: items,
         };
 
-        await tx.run(INSERT.into("mock.test.s4hana.Orders").entries(Order));
+        await addOrder(Order, tx);
       }); // cds.tx
     } catch (error) {
       console.error(error.message);
