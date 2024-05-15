@@ -34,6 +34,10 @@ async function getCustomer(customerID, tx){
   );
 }
 
+async function updateCustomer(customerID, data, tx){
+  await tx.run(UPDATE.entity("mock.test.s4hana.Customers").where({ID: customerID}).data(data));
+}
+
 async function getOrder(orderID, tx){
   return await tx.run(
     SELECT.one.from("mock.test.s4hana.Orders").where({ ID: orderID })
@@ -51,6 +55,22 @@ async function deleteOrder(orderID, tx){
 }
 
 module.exports = function () {
+
+  // Customer related actions and function
+  this.on("updateCustomerData", async (req) => {
+    const {customerID, data} = req.data;
+    try {
+      await cds.tx(async (tx) =>  {
+        return await updateCustomer(customerID, data, tx);
+      });
+    } catch (error) {
+      console.error(error.message);
+    }
+  });
+  // FinancialData related actions and function
+  // Inventory related actions and function
+  // OrderItems related actions and function
+  // Order related actions and function
   this.on("submitOrder", async (req) => {
     const { customerID, items } = req.data;
     try {
@@ -96,4 +116,6 @@ module.exports = function () {
       }
     });
   }); // cancelOrder
+
+  // Product related actions and function
 };

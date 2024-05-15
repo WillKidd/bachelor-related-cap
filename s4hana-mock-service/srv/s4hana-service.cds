@@ -8,6 +8,7 @@ service MockService {
   entity FinancialData as projection on db.FinancialData;
   entity Customers as projection on db.Customers;
   // Customer related actions and function
+  action updateCustomerData(customerID: UUID, data: Customers);
   // FinancialData related actions and function
   // Inventory related actions and function
   // OrderItems related actions and function
