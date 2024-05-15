@@ -34,8 +34,20 @@ async function getCustomer(customerID, tx){
   );
 }
 
+async function getOrder(orderID, tx){
+  return await tx.run(
+    SELECT.one.from("mock.test.s4hana.Orders").where({ ID: orderID })
+  );
+}
+
 async function addOrder(order, tx){
   await tx.run(INSERT.into("mock.test.s4hana.Orders").entries(order));
+}
+
+async function deleteOrder(orderID, tx){
+  await tx.run(
+    DELETE.from("mock.test.s4hana.Orders").where({ ID: orderID })
+  );
 }
 
 module.exports = function () {
@@ -76,15 +88,11 @@ module.exports = function () {
   this.on("cancelOrder", async (req) => {
     const { orderID } = req.data;
     await cds.tx(async (tx) => {
-      const order = await tx.run(
-        SELECT.one.from("mock.test.s4hana.Orders").where({ ID: orderID })
-      );
+      const order = await getOrder(orderID, tx);
       if (order.status !== "Pending") {
         throw new Error("Order can't be canceled!");
       } else {
-        await tx.run(
-          DELETE.from("mock.test.s4hana.Orders").where({ ID: orderID })
-        );
+        await deleteOrder(orderID, tx);
       }
     });
   }); // cancelOrder
