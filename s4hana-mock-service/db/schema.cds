@@ -1,6 +1,7 @@
 namespace mock.test.s4hana;
 using {cuid} from '@sap/cds/common';
 
+
 entity Products: cuid {
   @mandatory
   name               : String;
@@ -22,18 +23,14 @@ entity Inventory: cuid {
 entity Orders: cuid {
   @mandatory
   customer       : Association to Customers;
-  @mandatory
   orderDate          : Date;
-  @mandatory
   totalAmount        : Decimal;
-  @mandatory
   status             : String;
   @mandatory
   items              : Composition of many OrderItems on items.order = $self;
 }
 
 entity OrderItems: cuid {
-  @mandatory
   order            : Association to Orders;
   @mandatory
   product      : Association to Products;

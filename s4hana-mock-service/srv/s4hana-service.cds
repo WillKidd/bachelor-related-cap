@@ -1,4 +1,4 @@
-using mock.test.s4hana as db from '../db/schema';
+using {mock.test.s4hana as db} from '../db/schema';
 
 service MockService {
   entity Products as projection on db.Products;

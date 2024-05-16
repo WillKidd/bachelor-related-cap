@@ -1,74 +1,86 @@
-const cds = require("@sap/cds");
+const cds = require("@sap/cds"); // Assuming you're using @sap/cds
 
-async function checkInventory(productID, requiredQuantity, tx) {
-  const inventory = await tx.run(
-    SELECT.one
-      .from("mock.test.s4hana.Inventory")
-      .where({ product_ID: productID })
-  );
+const OrderStatus = {
+  CREATED: 'Created',
+  PENDING: 'In Process',
+  SHIPPED: 'Shipped',
+  COMPLETED: 'Completed',
+  CANCELLED: 'Cancelled'
+};
 
-  if (!inventory || inventory.quantity < requiredQuantity) {
-    throw new Error("Item quantity exceeds inventory!");
+module.exports = async function () {
+  const db = await cds.connect.to("db"); // connect to database service
+  const { Products, Inventory, Orders, OrderItems, FinancialData, Customers } =
+    db.entities;
+  console.log("test");
+  async function checkInventory(productID, requiredQuantity, tx) {
+    const inventory = await tx.run(
+      SELECT.one.from(Inventory).where({ product_ID: productID })
+    );
+
+    if (!inventory || inventory.quantity < requiredQuantity) {
+      throw new Error("Item quantity exceeds inventory!");
+    }
+    const newQuantity = inventory.quantity - requiredQuantity;
+    return newQuantity;
   }
-  const newQuantity = inventory.quantity - requiredQuantity;
-  return newQuantity;
-}
 
-async function updateInventory(productID, newQuantity, tx) {
-  await tx.run(
-    UPDATE.entity("mock.test.s4hana.Inventory")
-      .where({ product_ID: productID })
-      .with({ quantity: newQuantity })
-  );
-}
+  async function updateInventory(productID, newQuantity, tx) {
+    await tx.run(
+      UPDATE.entity(Inventory)
+        .where({ product_ID: productID })
+        .with({ quantity: newQuantity })
+    );
+  }
 
-async function getProduct(productID, tx) {
-  return await tx.run(
-    SELECT.one.from("mock.test.s4hana.Products").where({ ID: productID })
-  );
-}
+  async function getProduct(productID, tx) {
+    const product = await tx.run(SELECT.one.from(Products).where({ ID: productID }));
+    if (!product){
+      throw new Error("Product not found!");
+    }
+    return product;
+  }
 
-async function getCustomer(customerID, tx) {
-  return await tx.run(
-    SELECT.one.from("mock.test.s4hana.Customers").where({ ID: customerID })
-  );
-}
+  async function getCustomer(customerID, tx) { 
+    const customer = await tx.run(SELECT.one.from(Customers).where({ ID: customerID }));
+    if (!customer) {
+      throw new Error("Customer not found!");
+    }
+    return customer;
+  }
 
-async function updateCustomer(customerID, data, tx) {
-  await tx.run(
-    UPDATE.entity("mock.test.s4hana.Customers")
-      .where({ ID: customerID })
-      .data(data)
-  );
-}
+  async function updateCustomer(customerID, data, tx) {
+    await tx.run(UPDATE.entity(Customers).where({ ID: customerID }).data(data));
+  }
 
-async function getOrder(orderID, tx) {
-  return await tx.run(
-    SELECT.one.from("mock.test.s4hana.Orders").where({ ID: orderID })
-  );
-}
+  async function getOrder(orderID, tx) {
+    const order = await tx.run(SELECT.one.from(Orders).where({ ID: orderID }));
+    if (!order) {
+      throw new Error("Order not found!");
+    }
+    return order;
+  }
 
-async function addOrder(order, tx) {
-  await tx.run(INSERT.into("mock.test.s4hana.Orders").entries(order));
-}
+  async function addOrder(order, tx) {
+    await tx.run(INSERT.into(Orders).entries(order));
+  }
 
-async function deleteOrder(orderID, tx) {
-  await tx.run(DELETE.from("mock.test.s4hana.Orders").where({ ID: orderID }));
-}
+  async function deleteOrder(orderID, tx) {
+    await tx.run(DELETE.from(Orders).where({ ID: orderID }));
+  }
 
-async function updateOrder(orderID, data, tx) {
-  await tx.run(
-    UPDATE.entity("mock.test.s4hana.Orders").where({ ID: orderID }).data(data)
-  );
-}
+  async function updateOrder(orderID, data, tx) {
+    await tx.run(UPDATE.entity(Orders).where({ ID: orderID }).data(data));
+  }
 
-async function getOrderItems(orderID, tx) {
-  return await tx.run(
-    SELECT.from("mock.test.s4hana.OrderItems").where({ order_ID: orderID })
-  );
-}
+  async function getOrderItems(orderID, tx) {
+    const orderItems = await tx.run(SELECT.from(OrderItems).where({ order_ID: orderID }));
+    if (!orderItems){
+      throw new Error("No OrderItems found for Order: " + orderID );
+    }
+    return orderItems;
+  }
 
-module.exports = function () {
   // Customer related actions and function
   this.on("updateCustomerData", async (req) => {
     const { customerID, data } = req.data;
@@ -89,10 +101,6 @@ module.exports = function () {
     await cds.tx(async (tx) => {
       const customer = await getCustomer(customerID, tx);
 
-      if (!customer) {
-        throw new Error("Customer not found!");
-      }
-
       let totalAmount = 0;
       for (const item of items) {
         const product = await getProduct(item.product_ID, tx);
@@ -105,7 +113,7 @@ module.exports = function () {
         customer_ID: customerID,
         orderDate: new Date().toISOString(),
         totalAmount: totalAmount,
-        status: "Pending",
+        status: OrderStatus.PENDING,
         items: items,
       };
 
@@ -117,10 +125,12 @@ module.exports = function () {
     const { orderID } = req.data;
     await cds.tx(async (tx) => {
       const order = await getOrder(orderID, tx);
-      if (order.status !== "Pending"){
-        throw new Error("Order with status: " + order.status + " can't be fulfiled");
+      if (order.status !== OrderStatus.PENDING) {
+        throw new Error(
+          "Order with status: " + order.status + " can't be fulfiled"
+        );
       }
-      await updateOrder(orderID, { "status": "Delivered" }, tx);
+      await updateOrder(orderID, { status: OrderStatus.COMPLETED}, tx);
     });
   }); // fulfilOrder
 
@@ -128,20 +138,20 @@ module.exports = function () {
     const { orderID } = req.data;
     await cds.tx(async (tx) => {
       const order = await getOrder(orderID, tx);
-      if (!order) {
-        throw new Error("Order doesn't exist!");
-      }
-      if (order.status !== "Pending") {
+      if (order.status !== OrderStatus.PENDING) {
         throw new Error("Order can't be canceled!");
       } else {
-
         const items = await getOrderItems(orderID, tx);
 
         for (const item of items) {
-          const newQuantity = await checkInventory(item.product_ID, -item.quantity, tx);
+          const newQuantity = await checkInventory(
+            item.product_ID,
+            -item.quantity,
+            tx
+          );
           await updateInventory(item.product_ID, newQuantity, tx);
         }
-        await updateOrder(orderID, {"status": "Canceled"}, tx);
+        await updateOrder(orderID, { status: OrderStatus.CANCELLED }, tx);
       }
     });
   }); // cancelOrder
