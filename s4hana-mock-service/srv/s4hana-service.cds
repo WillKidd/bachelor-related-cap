@@ -15,5 +15,6 @@ service MockService {
   // Order related actions and function
   action submitOrder (customerID: UUID, items: array of OrderItems);
   action cancelOrder(orderID: UUID);
+  action fulfilOrder(orderID: UUID);
   // Product related actions and function
 }
