@@ -38,13 +38,6 @@ entity OrderItems: cuid {
   quantity           : Integer;
 }
 
-entity FinancialData: cuid {
-  period               : String;
-  revenue              : Decimal;
-  expenses             : Decimal;
-  profit               : Decimal;
-}
-
 entity Customers: cuid {
   @mandatory
   salesforceCustomerID : Integer;

@@ -5,7 +5,6 @@ service MockService {
   entity Inventory as projection on db.Inventory;
   entity Orders as projection on db.Orders;
   entity OrderItems as projection on db.OrderItems;
-  entity FinancialData as projection on db.FinancialData;
   entity Customers as projection on db.Customers;
   // Customer related actions and function
   action updateCustomerData(customerID: UUID, data: Customers);

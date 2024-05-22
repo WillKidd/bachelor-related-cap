@@ -10,7 +10,7 @@ const OrderStatus = {
 
 module.exports = async function () {
   const db = await cds.connect.to("db"); // connect to database service
-  const { Products, Inventory, Orders, OrderItems, FinancialData, Customers } =
+  const { Products, Inventory, Orders, OrderItems, Customers } =
     db.entities;
   console.log("test");
   async function checkInventory(productID, requiredQuantity, tx) {
