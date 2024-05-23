@@ -32,8 +32,6 @@ entity OpportunityItems : cuid {
   product     : Association to one Products;
   opportunity : Association to one Opportunities;
   quantity    : Integer;
-  unitPrice   : Decimal;
-  totalPrice  : Decimal;
 }
 
 entity Products : cuid {
