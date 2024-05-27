@@ -25,7 +25,7 @@ entity Inventory : cuid {
 
 entity Orders : cuid {
   @mandatory
-  customer    : Association to Customers;
+  customer    : Association to one Customers;
   orderDate   : Date;
   totalAmount : Decimal;
   status      : String;

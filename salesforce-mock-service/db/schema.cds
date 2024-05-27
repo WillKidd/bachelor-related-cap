@@ -2,48 +2,86 @@ namespace mock.test.salesforce;
 
 using {cuid} from '@sap/cds/common';
 
-entity Accounts : cuid {
-  name           : String;
-  billingAddress : Association to one BillingAddresses;
-  contacts       : Association to many Contacts
-                     on contacts.account = $self;
-  opportunities  : Association to many Opportunities
-                     on opportunities.account = $self;
-}
-
-entity Contacts : cuid {
-  account   : Association to one Accounts;
+entity Customers : cuid {
   firstName : String;
   lastName  : String;
   email     : String;
   phone     : String;
+  tickets: Composition of many Tickets;
+  billingAddress: Association to one BillingAddresses;
+  interactions: Composition of many Interactions;
+  opportunities: Composition of many Opportunities;
+}
+
+type TicketType : String enum {
+  question;   // Anfrage zu Informationen oder Details
+  issue;      // Meldung eines Problems oder Fehlers
+  request;    // Anforderung für eine Dienstleistung oder Änderung
+}
+
+type TicketStatus : String enum {
+  open;       // Offen und noch nicht bearbeitet
+  inProgress; // In Bearbeitung
+  resolved;   // Gelöst
+  closed;     // Geschlossen
+}
+
+entity Tickets : cuid {
+  customer: Association to one Customers;
+  type: TicketType;
+  subject: String;
+  description: String;
+  status: TicketStatus;
+  priority: String;
+  createdOn: Date;
+  resolvedOn: Date;
+}
+
+type InteractionType : String enum {
+  call;         // Telefonanruf
+  email;        // E-Mail-Austausch
+  meeting;      // Persönliches Treffen
+  socialMedia;  // Interaktion über soziale Medien
+  web;          // Interaktion über Webseite (z.B. Chat)
+}
+
+entity Interactions : cuid {
+  customer: Association to one Customers;
+  date: Date;
+  type: InteractionType;
+  details: String;
+}
+
+type OpportunityType : String enum {
+  newBusiness;     // Neue Geschäftsmöglichkeit
+  upsell;          // Up-Selling zu einem bestehenden Kunden
+  crossSell;       // Cross-Selling zusätzlicher Produkte
+  renewal;         // Erneuerung eines Vertrags oder Abonnements
+}
+
+type OpportunityStage : String enum {
+  initialContact;  // Erster Kontakt
+  needsAnalysis;   // Bedarfsanalyse
+  proposal;        // Angebotserstellung
+  negotiation;     // Verhandlung
+  decision;        // Entscheidung
+  closedWon;       // Abgeschlossen (gewonnen)
+  closedLost;      // Abgeschlossen (verloren)
 }
 
 entity Opportunities : cuid {
-  account   : Association to one Accounts;
+  customer   : Association to one Customers;
+  type: OpportunityType;
   name      : String;
-  stageName : String;
+  stageName : OpportunityStage;
   closeDate : Date;
-  items     : Association to many OpportunityItems;
-  amount    : Decimal;
+  potentialRevenue    : Decimal;
 }
 
-entity OpportunityItems : cuid {
-  product     : Association to one Products;
-  opportunity : Association to one Opportunities;
-  quantity    : Integer;
-}
-
-entity Products : cuid {
-  name        : String;
-  description : String;
-  price       : Decimal;
-  category    : String;
-}
 
 entity BillingAddresses : cuid {
-  account    : Association to one Accounts
-                 on account.billingAddress = $self;
+  customer    : Association to one Customers
+                 on customer.billingAddress = $self;
   street     : String;
   city       : String;
   state      : String;
