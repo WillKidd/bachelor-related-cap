@@ -1,47 +1,68 @@
 namespace mock.test.s4hana;
+
 using {cuid} from '@sap/cds/common';
 
-entity Products: cuid {
-  name               : String;
-  description        : String;
-  price              : Decimal;
-  category           : String;
+entity Products : cuid {
+  @mandatory
+  name        : String;
+  description : String;
+
+  @mandatory
+  price       : Decimal;
+  category    : String;
 }
 
-entity Inventory: cuid {
-  product      : Association to Products;
-  location           : String;
-  quantity           : Integer;
+entity Inventory : cuid {
+  @mandatory
+  product  : Association to Products;
+
+  @mandatory
+  location : String;
+
+  @mandatory
+  quantity : Integer;
 }
 
-entity Orders: cuid {
-  customer       : Association to Customers;
-  orderDate          : Date;
-  totalAmount        : Decimal;
-  status             : String;
-  items              : Composition of many OrderItems on items.order = $self;
+entity Orders : cuid {
+  @mandatory
+  customer    : Association to Customers;
+  orderDate   : Date;
+  totalAmount : Decimal;
+  status      : String;
+
+  @mandatory
+  items       : Composition of many OrderItems
+                  on items.order = $self;
 }
 
-entity OrderItems: cuid {
-  order            : Association to Orders;
-  product      : Association to Products;
-  quantity           : Integer;
+entity OrderItems : cuid {
+  order    : Association to Orders;
+
+  @mandatory
+  product  : Association to Products;
+
+  @mandatory
+  quantity : Integer;
 }
 
-entity FinancialData: cuid {
-  period               : String;
-  revenue              : Decimal;
-  expenses             : Decimal;
-  profit               : Decimal;
+entity Customers : cuid {
+  @mandatory
+  salesforceCustomerID : UUID;
+  firstName            : String;
+  lastName             : String;
+
+  @mandatory
+  email                : String;
+  phone                : String;
+
+  @mandatory
+  billingAddress       : Association to BillingAddresses;
 }
 
-entity Customers: cuid {
-  salesforceCustomerID : Integer;
-  firstName          : String;
-  lastName           : String;
-  email              : String;
-  phone              : String;
-  address            : String;
-  city               : String;
-  country            : String;
+entity BillingAddresses : cuid {
+  street     : String;
+  city       : String;
+  state      : String;
+  postalCode : String;
+  country    : String;
 }

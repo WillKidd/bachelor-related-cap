@@ -1,29 +1,52 @@
 namespace mock.test.salesforce;
 
-entity Account {
-  key ID           : Integer;
-  name             : String;
-  phone            : String;
-  billingCity      : String;
-  billingCountry   : String;
-  contacts         : Association to many Contact on contacts.accountID = ID;
-  opportunities    : Association to many Opportunity on opportunities.accountID = ID;
+using {cuid} from '@sap/cds/common';
+
+entity Accounts : cuid {
+  name           : String;
+  billingAddress : Association to one BillingAddresses;
+  contacts       : Association to many Contacts
+                     on contacts.account = $self;
+  opportunities  : Association to many Opportunities
+                     on opportunities.account = $self;
 }
 
-entity Contact {
-  key ID           : Integer;
-  accountID        : Integer;
-  firstName        : String;
-  lastName         : String;
-  email            : String;
-  phone            : String;
+entity Contacts : cuid {
+  account   : Association to one Accounts;
+  firstName : String;
+  lastName  : String;
+  email     : String;
+  phone     : String;
 }
 
-entity Opportunity {
-  key ID           : Integer;
-  accountID        : Integer;
-  name             : String;
-  stageName        : String;
-  closeDate        : Date;
-  amount           : Decimal;
+entity Opportunities : cuid {
+  account   : Association to one Accounts;
+  name      : String;
+  stageName : String;
+  closeDate : Date;
+  items     : Association to many OpportunityItems;
+  amount    : Decimal;
+}
+
+entity OpportunityItems : cuid {
+  product     : Association to one Products;
+  opportunity : Association to one Opportunities;
+  quantity    : Integer;
+}
+
+entity Products : cuid {
+  name        : String;
+  description : String;
+  price       : Decimal;
+  category    : String;
+}
+
+entity BillingAddresses : cuid {
+  account    : Association to one Accounts
+                 on account.billingAddress = $self;
+  street     : String;
+  city       : String;
+  state      : String;
+  postalCode : String;
+  country    : String;
 }

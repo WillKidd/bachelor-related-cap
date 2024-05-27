@@ -1,0 +1,5 @@
+ID,account_ID,name,stageName,closeDate,amount
+67b09186-9d44-4cfa-9ae0-1e5605620aa3,5948b99d-0017-47f4-afce-4859a0f8a8be,Big Sale,Proposal,2023-06-01,10000
+ae692345-af4e-41af-ad7b-0311d65ebc81,5948b99d-0017-47f4-afce-4859a0f8a8be,Small Sale,Negotiation,2023-07-15,5000
+81c7d62a-4461-4263-80ab-fe05cb2ed477,762faa48-171d-47ce-b39b-c26b2b5e8113,Large Contract,Closed Won,2023-08-20,20000
+ea8c651e-9380-452d-91ef-5070604548a5,762faa48-171d-47ce-b39b-c26b2b5e8113,Renewal,Qualification,2023-09-10,15000
