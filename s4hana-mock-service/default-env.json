@@ -1,0 +1,26 @@
+{
+    "VCAP_SERVICES": {
+      "xsuaa": [
+        {
+          "credentials": {
+            "url": "",
+            "clientid": "",
+            "clientsecret": "",
+            "xsappname": "",
+            "identityzone": "",
+            "identityzoneid": "",
+            "tenantid": "",
+            "tenantmode": "shared",
+            "uaadomain": "",
+            "verificationkey": "",
+            "apiurl": "",
+            "sburl": "",
+            "certurl": "",
+            "certificates": ""
+          },
+          "label": "xsuaa"
+        }
+      ]
+    }
+  }
+  
