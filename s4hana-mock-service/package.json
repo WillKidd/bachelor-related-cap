@@ -20,7 +20,7 @@
     "requires": {
       "db": {
         "kind": "sqlite",
-        "model": "3",
+        "model": "*",
         "credentials": {
           "database": ":memory:"
         }
