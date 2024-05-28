@@ -16,6 +16,17 @@
     "@sap/eslint-plugin-cds": "^3",
     "eslint": "^9"
   },
+  "cds": {
+    "requires": {
+      "db": {
+        "kind": "sqlite",
+        "model": "3",
+        "credentials": {
+          "database": ":memory:"
+        }
+      }
+    }
+  },
   "scripts": {
     "start": "cds-serve"
   }
