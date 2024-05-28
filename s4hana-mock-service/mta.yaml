@@ -17,6 +17,9 @@ modules:
     path: gen/srv
     parameters:
       buildpack: nodejs_buildpack
+      runtime: "nodejs:14.17.0"
+      memory: 512M
+      disk_quota: 1G
       readiness-health-check-type: http
       readiness-health-check-http-endpoint: /health
     build-parameters:
