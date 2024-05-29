@@ -3,6 +3,7 @@ _out
 *.db
 *.sqlite
 connection.properties
+default-env.json
 default-*.json
 .cdsrc-private.json
 gen/
