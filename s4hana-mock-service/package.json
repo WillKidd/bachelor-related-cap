@@ -27,6 +27,9 @@
         }
       },
       "auth": "xsuaa"
+    },
+    "features":{
+      "in_memory_db": true
     }
   },
   "scripts": {
