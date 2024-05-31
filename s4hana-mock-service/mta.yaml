@@ -1,4 +1,3 @@
----
 _schema-version: '3.1'
 ID: s4hana-mock-service
 version: 1.0.0
@@ -28,4 +27,15 @@ modules:
       - name: srv-api # required by consumers of CAP services (e.g. approuter)
         properties:
           srv-url: ${default-url}
-    requires: []
+    requires:
+      - name: s4hana-mock-service-auth
+
+resources:
+  - name: s4hana-mock-service-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+      config:
+        tenant-mode: dedicated

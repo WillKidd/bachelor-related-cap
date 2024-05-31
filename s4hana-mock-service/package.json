@@ -6,7 +6,8 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
-    "@sap/cds": "^7",
+    "@sap/cds": "^7.9.2",
+    "@sap/xssec": "^3",
     "express": "^4",
     "sqlite3": "^5.1.7"
   },
@@ -24,7 +25,11 @@
         "credentials": {
           "database": ":memory:"
         }
-      }
+      },
+      "auth": "xsuaa"
+    },
+    "features":{
+      "in_memory_db": true
     }
   },
   "scripts": {
