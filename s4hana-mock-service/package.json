@@ -6,14 +6,31 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
-    "@sap/cds": "^7",
+    "@sap/cds": "^7.9.2",
+    "@sap/xssec": "^3",
     "express": "^4",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "@cap-js/sqlite": "^1",
+    "@sap/cds-dk": "^7",
     "@sap/eslint-plugin-cds": "^3",
     "eslint": "^9"
+  },
+  "cds": {
+    "requires": {
+      "db": {
+        "kind": "sqlite",
+        "model": "*",
+        "credentials": {
+          "database": ":memory:"
+        }
+      },
+      "auth": "xsuaa"
+    },
+    "features":{
+      "in_memory_db": true
+    }
   },
   "scripts": {
     "start": "cds-serve"
