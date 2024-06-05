@@ -1,3 +1,0 @@
-ID,salesforceCustomerID,firstName,lastName,email,phone,billingAddress_ID
-87fd1959-f4dc-4b20-8eea-1564dc65ac22,1,John,Doe,john.doe@example.com,1234567890,3c56af3e-59ab-49aa-b5f8-cd3389ec013b
-87fd1959-f4dc-4b20-8eea-1564dc65ac23,2,Jane,Smith,jane.smith@example.com,9876543210,3c56af3e-59ab-49aa-b5f8-cd3389ec013b
