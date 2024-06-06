@@ -1,3 +1,4 @@
+import com.sap.gateway.ip.core.customdev.util.Message;
 import java.util.HashMap;
 import groovy.json.JsonSlurper;
 import groovy.json.JsonOutput;
