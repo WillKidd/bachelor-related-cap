@@ -6,14 +6,23 @@ import groovy.json.JsonOutput;
 def Message processData(Message message) {
     def json = message.getBody(java.io.Reader);
     def data = new JsonSlurper().parse(json);
-    def customerJson = JsonOutput.toJson([
+    def hashmap = [
         salesforceCustomerID : data.ID,
         firstName            : data.firstName,
         lastName             : data.lastName,
         email                : data.email,
         phone                : data.phone,
-        billingAddress       : data.billingAddress
-    ])
+        billingAddress       : data.billingAddress,
+        billingAddress_ID: data.billingAddress_ID
+    ];
+    def submap = hashmap.findAll { 
+        it.value == null 
+    };
+    submap.each{
+        hashmap.remove(it.key);
+    }
+    def customerJson = JsonOutput.toJson(hashmap);
+    
     message.setBody(customerJson);
     return message;
 }

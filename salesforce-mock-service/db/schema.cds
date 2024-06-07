@@ -8,7 +8,7 @@ entity Customers : cuid {
   email     : String;
   phone     : String;
   tickets: Composition of many Tickets;
-  billingAddress: Association to one BillingAddresses;
+  billingAddress: Composition of BillingAddresses;
   interactions: Composition of many Interactions;
   opportunities: Composition of many Opportunities;
 }
