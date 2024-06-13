@@ -4,7 +4,6 @@ import groovy.json.JsonSlurper;
 import groovy.json.JsonOutput
 
 def Message processData(Message message) {
-
     def messageLog = messageLogFactory.getMessageLog(message);
     Exception exception = message.getProperty("CamelExceptionCaught");
     
@@ -12,6 +11,5 @@ def Message processData(Message message) {
         def errorMsg = "Error occured in Integration Flow: " + exception.message;
         messageLog.addAttachmentAsString("ErrorMsg", errorMsg, "text/plain");
     }
-    
     return message;
 }
