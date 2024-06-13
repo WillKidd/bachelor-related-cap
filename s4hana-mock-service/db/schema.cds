@@ -48,6 +48,8 @@ entity Customers : cuid {
 }
 
 entity BillingAddresses : cuid {
+  customer    : Association to one Customers
+                 on customer.billingAddress = $self;
   street     : String;
   city       : String;
   state      : String;
