@@ -21,9 +21,9 @@ def Message processData(Message message) {
         errorMsg = "Status (valid values: open, inProgress, resolved, closed)";
     } else if (!data.priority || data.priority.isEmpty()){
         errorMsg = "Priority";
-    } else if (!data.createdOn){
+    } else if (data.status == "open" && !data.createdOn){
         errorMsg = "Created On";
-    } else if (!data.resolvedOn){
+    } else if (data.status == "resolved" && !data.resolvedOn){
         errorMsg = "Resolved On";
     }
     if (errorMsg){
