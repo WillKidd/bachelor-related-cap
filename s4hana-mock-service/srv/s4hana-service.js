@@ -1,17 +1,16 @@
 const cds = require("@sap/cds"); // Assuming you're using @sap/cds
 
 const OrderStatus = {
-  CREATED: 'Created',
-  PENDING: 'In Process',
-  SHIPPED: 'Shipped',
-  COMPLETED: 'Completed',
-  CANCELLED: 'Cancelled'
+  CREATED: "Created",
+  PENDING: "In Process",
+  SHIPPED: "Shipped",
+  COMPLETED: "Completed",
+  CANCELLED: "Cancelled",
 };
 
 module.exports = async function () {
   const db = await cds.connect.to("db"); // connect to database service
-  const { Products, Inventory, Orders, OrderItems, Customers } =
-    db.entities;
+  const { Products, Inventory, Orders, OrderItems, Customers } = db.entities;
   console.log("test");
   async function checkInventory(productID, requiredQuantity, tx) {
     const inventory = await tx.run(
@@ -34,15 +33,19 @@ module.exports = async function () {
   }
 
   async function getProduct(productID, tx) {
-    const product = await tx.run(SELECT.one.from(Products).where({ ID: productID }));
-    if (!product){
+    const product = await tx.run(
+      SELECT.one.from(Products).where({ ID: productID })
+    );
+    if (!product) {
       throw new Error("Product not found!");
     }
     return product;
   }
 
-  async function getCustomer(customerID, tx) { 
-    const customer = await tx.run(SELECT.one.from(Customers).where({ ID: customerID }));
+  async function getCustomer(customerID, tx) {
+    const customer = await tx.run(
+      SELECT.one.from(Customers).where({ ID: customerID })
+    );
     if (!customer) {
       throw new Error("Customer not found!");
     }
@@ -74,9 +77,11 @@ module.exports = async function () {
   }
 
   async function getOrderItems(orderID, tx) {
-    const orderItems = await tx.run(SELECT.from(OrderItems).where({ order_ID: orderID }));
-    if (!orderItems){
-      throw new Error("No OrderItems found for Order: " + orderID );
+    const orderItems = await tx.run(
+      SELECT.from(OrderItems).where({ order_ID: orderID })
+    );
+    if (!orderItems) {
+      throw new Error("No OrderItems found for Order: " + orderID);
     }
     return orderItems;
   }
@@ -121,6 +126,44 @@ module.exports = async function () {
     }); // cds.tx
   }); // submitOrder
 
+  this.on("updateOrder", async (req) => {
+    const { orderID, data } = req.data;
+    if (!!data.items)
+      await cds.tx(async (tx) => {
+        const items = await getOrderItems(orderID, tx);
+
+        for (const item of items) {
+          const newQuantity = await checkInventory(
+            item.product_ID,
+            -item.quantity,
+            tx
+          );
+          await updateInventory(item.product_ID, newQuantity, tx);
+        }
+        let totalAmount = 0;
+        for (const item of data.items) {
+          const product = await getProduct(item.product_ID, tx);
+          const newQuantity = await checkInventory(
+            product.ID,
+            item.quantity,
+            tx
+          );
+          await updateInventory(product.ID, newQuantity, tx);
+          totalAmount += product.price * item.quantity;
+        }
+
+        const Order = {
+          customer_ID: customerID,
+          orderDate: new Date().toISOString(),
+          totalAmount: totalAmount,
+          status: OrderStatus.PENDING,
+          items: items,
+        };
+
+        await updateOrder(orderID, data, tx);
+      }); // cds.tx
+  }); //update Order
+
   this.on("fulfilOrder", async (req) => {
     const { orderID } = req.data;
     await cds.tx(async (tx) => {
@@ -130,7 +173,7 @@ module.exports = async function () {
           "Order with status: " + order.status + " can't be fulfiled"
         );
       }
-      await updateOrder(orderID, { status: OrderStatus.COMPLETED}, tx);
+      await updateOrder(orderID, { status: OrderStatus.COMPLETED }, tx);
     });
   }); // fulfilOrder
 
