@@ -16,7 +16,7 @@ def Message processData(Message message) {
         errorMsg = "Email";
     } else if (!data.phone){
         errorMsg = "Phone Number";
-    } else if (!data.billingAddress){
+    } else if (!data.billingAddress && !data.billingAddress_ID){
         errorMsg = "Billing Address";
     }
     if (!!errorMsg){
